@@ -5,14 +5,14 @@ import {
     OperationCommands,
 } from "../Constants/Commands";
 
-function useCalculator(command) {
+function useCalculator(commandObj) {
     const [displayValue, setDisplayValue] = useState("0");
 
     const [lhs, setLhs] = useState(null);
     const [operator, setOperator] = useState(null);
     const [rhs, setRhs] = useState(null);
 
-    function executeCurrentOperation() {
+    const executeCurrentOperation = () => {
         if (lhs == null || operator == null || rhs == null) {
             clearDownValues(true);
             return;
@@ -36,6 +36,8 @@ function useCalculator(command) {
             case OperationCommands.Addition:
                 result = lhsNumber + rhsNumber;
                 break;
+            default:
+                return;
         }
 
         clearDownValues();
@@ -43,50 +45,61 @@ function useCalculator(command) {
         setDisplayValue(result);
     }
 
-    function clearDownValues(isError) {
+    const clearDownValues = (isError) => {
         setLhs(null);
         setOperator(null);
         setRhs(null);
         setDisplayValue(isError ? "ERROR" : "0");
     }
 
+    const handleDigitCommand = (command) => {
+        if (operator == null) {
+            const newLhs = `${lhs ?? ""}${command}`;
+
+            if (!isNaN(newLhs)) setLhs(newLhs);
+
+            setDisplayValue(newLhs);
+        } else {
+            const newRhs = `${rhs ?? ""}${command}`;
+
+            if (!isNaN(newRhs)) setRhs(newRhs);
+
+            setDisplayValue(newRhs);
+        }
+        return;
+    };
+
+    const handleSwapSign = () => {
+        if (operator != null && rhs != null) {
+            const newRhs = Number(rhs) * -1;
+            setRhs(newRhs);
+            setDisplayValue(newRhs);
+            
+        } else if (lhs != null){
+            const newLhs = Number(lhs) * -1;
+            setLhs(newLhs);
+            setDisplayValue(newLhs);
+        }
+    };
+
     useEffect(() => {
-        const { value } = command;
+        const { command } = commandObj;
 
-        console.log(`Command applied: ${JSON.stringify(command)}`);
-
-        if (Object.values(DigitCommands).includes(value)) {
-            if (operator == null) {
-                const newLhs = `${lhs ?? ""}${value}`;
-
-                if (!isNaN(newLhs)) setLhs(newLhs);
-
-                setDisplayValue(newLhs);
-            } else {
-                const newRhs = `${rhs ?? ""}${value}`;
-
-                if (!isNaN(newRhs)) setRhs(newRhs);
-
-                setDisplayValue(newRhs);
-            }
-            return;
+        if (isDigitCommand(command)) {
+            handleDigitCommand(command);
         }
 
-        switch (value) {
+        switch (command) {
             case FunctionCommands.Clear:
                 clearDownValues();
                 break;
 
             case FunctionCommands.SwapSign:
-                if (operator != null && rhs != null) {
-                    const newRhs = Number(rhs) * -1;
-                    setRhs(newRhs);
-                    setDisplayValue(newRhs);
-                } else if (lhs != null){
-                    const newLhs = Number(lhs) * -1;
-                    setRhs(newLhs);
-                    setDisplayValue(newLhs);
-                }
+                handleSwapSign();
+                break;
+            
+            case FunctionCommands.Percentage:
+                //TODO: implement percentage logic here
                 break;
 
             case OperationCommands.Equals:
@@ -100,12 +113,19 @@ function useCalculator(command) {
                 if (rhs != null) {
                     executeCurrentOperation();
                 }
-                setOperator(value);
+                setOperator(command);
+                break;
+            default:
                 break;
         }
-    }, [command]);
+    }, [commandObj]);
 
     return displayValue;
 }
+
+function isDigitCommand(command){
+    return Object.values(DigitCommands).includes(command);
+}
+
 
 export default useCalculator;

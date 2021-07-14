@@ -32,7 +32,7 @@ const FunctionButton = withStyles((theme) => ({
 }))(BaseButton);
 
 export const CalculatorButton = ({command, onClick}) => {
-    const onButtonClick = () => onClick({ value: command });
+    const onButtonClick = () => onClick({ command });
 
     if (Object.values(DigitCommands).includes(command)){
         return <DigitButton onClick={onButtonClick}>{command}</DigitButton>;
