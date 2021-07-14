@@ -1,3 +1,36 @@
+# Application information
+
+## To run the application
+
+After cloning, run `yarn install` to retrieve all associated packages
+
+Run `yarn start` to begin running the development build through node
+
+## Build
+
+To build, run the `yarn build` command. The resulting artefacts will be placed into the 'build' directory at the root of the project
+
+### To serve the build artefacts locally
+
+a) run `yarn add global serve` 
+    - then `serve -s build` from the root of the project
+b) run `yarn npx serve -s build`
+
+Both achieve the same result but npx serve can be easier if environment variables are giving you grief.
+
+### To host the site
+
+Copy the contents of the build directory to the machine you are using for hosting. The built site is static html and javascript so you don't need anything fancier than a file host.
+
+
+
+
+
+
+
+## AUTO GENERATED: readme for npx create-react-app
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
